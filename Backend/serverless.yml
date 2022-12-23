@@ -1,0 +1,75 @@
+org: lucastadram
+service: serverless-medicalife
+useDotenv: true
+app: serverless-medicalife
+frameworkVersion: '3'
+plugins:
+  - serverless-offline
+  - serverless-plugin-common-excludes
+provider:
+  name: aws
+  runtime: nodejs14.x
+  memorySize: 128
+  timeout: 30
+  environment:
+    NODE_ENV: '${env:NODE_ENV}'
+    DB_NAME: '${env:DB_NAME}'
+    DB_USER: '${env:DB_USER}'
+    DB_PASSWORD: '${env:DB_PASSWORD}'
+    DB_HOST: '${env:DB_HOST}'
+    DB_PORT: '${env:DB_PORT}'
+  vpc:
+    securityGroupIds:
+      - '${env:SECURITY_GROUP_ID}'
+    subnetIds:
+      - '${env:SUBNET1_ID}'
+      - '${env:SUBNET2_ID}'
+      - '${env:SUBNET3_ID}'
+      - '${env:SUBNET4_ID}'
+
+functions:
+  getById:
+    handler: src/patients/handlers/patientHandler.getById
+    events:
+      - http:
+          path: 'patient/{id}'
+          method: get
+          cors:
+            origin: '*' # <-- Specify allowed origin
+
+  getAll:
+    handler: src/patients/handlers/patientHandler.getAll
+    events:
+      - http:
+          path: patient
+          method: get
+          cors:
+            origin: '*' # <-- Specify allowed origin
+
+  create:
+    handler: src/patients/handlers/patientHandler.create
+    events:
+      - http:
+          path: patient
+          method: post
+          cors:
+            origin: '*' # <-- Specify allowed origin
+            
+  update:
+    handler: src/patients/handlers/patientHandler.update
+    events:
+      - http:
+          path: 'patient/{id}'
+          method: put
+          cors:
+            origin: '*' # <-- Specify allowed origin
+
+  delete:
+    handler: src/patients/handlers/patientHandler.delete
+    events:
+      - http:
+          path: 'patient/{id}'
+          method: delete
+          cors:
+            origin: '*' # <-- Specify allowed origin
+
